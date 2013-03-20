@@ -1,0 +1,11 @@
+AeonBot - an user-friendly IRCbot library in the spirit of PircBot
+
+AeonBot is multithreaded and abstracts the functionality of IRC under the EventHandler class
+which contains all the callable events the user can handle.
+
+It supports multiple networks natively.
+
+At this stage everything else but ping out handler in Connection.py should be working correctly, so
+if you don't ping out often running this bot should not be a problem!
+
+More documentation will follow with examples how to run this bot.
