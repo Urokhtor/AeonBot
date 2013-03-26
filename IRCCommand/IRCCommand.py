@@ -5,9 +5,9 @@ import sys
 
 class IRCCommand:
 
-    def __init__(self, commandOutputQueue, logging):
-        self.logging = logging
-        self.taskManager = TaskManager(commandOutputQueue)
+    def __init__(self, bot):
+        self.bot = bot
+        self.taskManager = TaskManager(self.bot.commandOutputQueue)
         self.modules = []
     
     def loadModule(self, moduleName):
@@ -22,16 +22,17 @@ class IRCCommand:
     
     def dispatchCommand(self, server, channel, sender, login, hostname, message, type):
         """
-            Checks whether the message contains a valid command and then sends a Command object
-            to the inputCommandHandler.
+            Creates a command object and goes through loaded modules. If we find a match for the
+            wanted command we get the function and dispatch it to the task manager which handles
+            executing it correspondingly.
         """
         tmp = message.split(" ", 1)
         
         if len(tmp) > 1:
-            command = Command(server, channel, sender, tmp[0].strip(), tmp[1].strip(), type)
+            command = Command(self.bot, server, channel, sender, tmp[0].strip(), tmp[1].strip(), type)
         
         else:
-            command = Command(server, channel, sender, tmp[0].strip(), "", type)
+            command = Command(self.bot, server, channel, sender, tmp[0].strip(), "", type)
         
         for module in self.modules:
             try:
@@ -50,7 +51,8 @@ class Command:
         like "speak [channel] [message]".
     """
     
-    def __init__(self, server, channel, sender, command, message, type, privilege = "normal"):
+    def __init__(self, bot, server, channel, sender, command, message, type, privilege = "normal"):
+        self.bot = bot
         self.server = server # Server where the request originated from
         self.channel = channel # Channel where the request originated from
         self.sender = sender # User who triggered the command
