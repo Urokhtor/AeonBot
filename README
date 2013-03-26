@@ -8,4 +8,8 @@ It supports multiple networks natively.
 At this stage everything else but ping out handler in Connection.py should be working correctly, so
 if you don't ping out often running this bot should not be a problem!
 
+IRCCommand is not a part of AeonBot, it's just the command interface I wrote for my bot that I'm
+using. However anyone is free to use it if they want so I've included it alongside the AeonBot
+library source.
+
 More documentation will follow with examples how to run this bot.
