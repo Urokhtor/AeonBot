@@ -1,6 +1,7 @@
 from queue import Queue
 from time import sleep
 from threading import Thread
+from imp import reload
 import sys
 
 class IRCCommand:
@@ -8,17 +9,37 @@ class IRCCommand:
     def __init__(self, bot):
         self.bot = bot
         self.taskManager = TaskManager(self.bot.commandOutputQueue)
-        self.modules = []
+        self.modules = {}
     
     def loadModule(self, moduleName):
+        """
+            Attempts to load a module from IRCCommand subfolder and stores the module in a dict
+            if it's successful.
+        """
+        
+        if moduleName in self.modules:
+            return False
+            
         try:
-            __import__("IRCCommand." + moduleName, fromlist=[moduleName])
-            self.modules.append(moduleName)
+            module = __import__("IRCCommand." + moduleName, fromlist=[moduleName])
+            self.modules[moduleName] = module
             return True
         
         except ImportError:
             return False
     
+    def reloadModule(self, moduleName):
+        """
+            Attempts to reload a module by passing the old import object to imp.reload() which
+            returns the new import object if reload was successful.
+        """
+        
+        if moduleName in self.modules:
+            self.modules[moduleName] = reload(self.modules[moduleName])
+            return True
+                
+        else:
+            return False
     
     def dispatchCommand(self, server, channel, sender, login, hostname, message, type):
         """
@@ -34,7 +55,7 @@ class IRCCommand:
         else:
             command = Command(self.bot, server, channel, sender, tmp[0].strip(), "", type)
         
-        for module in self.modules:
+        for module, moduleObject in self.modules.items():
             try:
                 self.taskManager.addTask((getattr(getattr(sys.modules["IRCCommand." + module], module), tmp[0]), command))
             except AttributeError:
@@ -52,7 +73,7 @@ class Command:
     """
     
     def __init__(self, bot, server, channel, sender, command, message, type, privilege = "normal"):
-        self.bot = bot
+        self.bot = bot # Bot object so commands can access its functions
         self.server = server # Server where the request originated from
         self.channel = channel # Channel where the request originated from
         self.sender = sender # User who triggered the command
@@ -90,7 +111,8 @@ class TaskManager:
                 
                 # Execute the function and put its return value in bot's queue which is used to
                 # handle outgoing traffic.
-                self.commandOutputQueue.put(task[0](task[1]))
+                try: self.commandOutputQueue.put(task[0](task[1]))
+                except: pass
                 
             else:
                 sleep(0.5)
