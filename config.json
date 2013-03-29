@@ -1,0 +1,35 @@
+{
+    "modules": [
+        "IRCCommand.IRCCommand", 
+        "IRCCommand.BasicCommand", 
+        "IRCCommand.OwnerCommand", 
+        "IRCCommand.SearchCommand", 
+        "Utils.AccessControl"
+    ], 
+    "networks": {
+        "Default": {
+            "hostname": "irc.default.org", 
+            "channels": [], 
+            "authpass": "", 
+            "port": "6667"
+        }
+    }, 
+    "allowedchannels": [
+    ], 
+    "lastfmAPI": "", 
+    "users": {
+        "Default": {
+            "hosts": [
+                "*!~Default@Default.users.Default.org"
+            ], 
+            "trusted": true
+        }
+    }, 
+    "trustedchannels": [
+    ], 
+    "realname": "AeonBot", 
+    "youtubeAPI": "", 
+    "commandprefix": "!", 
+    "login": "aeonbot", 
+    "name": "Default"
+}

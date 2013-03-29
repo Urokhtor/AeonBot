@@ -1,7 +1,12 @@
 import urllib.request
+from Utils.Decorators import Decorators
 
 class SearchCommand:
 
+    @Decorators.trusted
+    @Decorators.blacklisted
+    @Decorators.allowedchannel
+    @Decorators.trustedchannel
     def find(command):
         """
             Uses Bing to search the given search arguments and returns the first search result.
@@ -16,6 +21,10 @@ class SearchCommand:
         
         return command
     
+    @Decorators.trusted
+    @Decorators.blacklisted
+    @Decorators.allowedchannel
+    @Decorators.trustedchannel
     def youtube(command):
         """
             Uses the YouTube API v.2.0 to query for the first search result for the given search
@@ -38,6 +47,10 @@ class SearchCommand:
             
         return command
     
+    @Decorators.trusted
+    @Decorators.blacklisted
+    @Decorators.allowedchannel
+    @Decorators.trustedchannel
     def lastfm(command):
         """
             Uses the LastFM API to query given user's latest played tracks and then parses and returns
@@ -52,7 +65,7 @@ class SearchCommand:
             except urllib.error.HTTPError:
                 command.result = "Couldn't find user " + command.message
                 return command
-                
+            
             track = str(response.read())
             nowPlaying = False
             
@@ -63,6 +76,10 @@ class SearchCommand:
             elif track.find("<track>") != -1:
                 track = track.split("<track>", 1)[1].split("</track>", 1)[0]
             
+            else:
+                command.result = "Couldn't find user " + command.message
+                return command
+                
             artist = track.split(">", 1)[1].split("</")[0]
             song = track.split("<name>", 1)[1].split("</name>", 1)[0]
             
