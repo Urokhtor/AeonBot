@@ -106,26 +106,7 @@ class DefaultBot(AeonBot):
         # If there are registered functions and message hasn't been dispatched yet, do it now.
         elif len(self.registeredFunctions) > 0:
             self.subsystems["IRCCommand"].dispatchCommand(server, channel, sender, login, hostname, message, "message")
-            
-        if sender == "Urokhtor" and message == "channels":
-            self.irc.sendMessage(server, channel, self.irc.ConnectionManager[server].getChannelManager().getChannelsToString())
         
-        if sender == "Urokhtor" and message == "servers":
-            self.irc.sendMessage(server, channel, self.irc.getServersToString())
-        
-        if message.startswith("speak") and sender == "Urokhtor":
-            channel = message.split()[1]
-            speak = message.split(" ", 2)[2]
-            self.irc.sendMessage(server, channel, speak)
-        
-        if sender == "Urokhtor" and message.startswith("rawline"):
-            self.irc.sendRawLine(server, message.split(" ", 1)[1])
-        
-        if sender == "Urokhtor" and message == "users":
-            if self.irc.ConnectionManager[server].getChannelManager().findChannel(channel):
-                userList = self.irc.ConnectionManager[server].getChannelManager().getChannel(channel).getUsersToString()
-            self.irc.sendMessage(server, channel, userList)
-    
     # Just like with messages, if bot receives a private message, it calls this function.
     def onPrivateMessage(self, server, sender, login, hostname, message):
         user = self.subsystems["access"].getUser(sender)
@@ -165,16 +146,6 @@ class DefaultBot(AeonBot):
         if command.bot.subsystems["access"].getUser(sender).owner:
             self.irc.join(server, target)
     
-    #def onJoin(self, server, channel, nick, login, hostname):
-    #    if channel == "#satana":
-    #        self.irc.sendMessage(server, channel, "Hello.")
-    
-    #def onNotice(self, server, target, sender, login, hostname, message):
-    #    self.logLine("onNotice-message", target + " " + sender + " " + login + " " + hostname + " " + message)
-        
-    #def onKick(self, server, channel, sender, login, hostname, recipient, message):
-    #    self.logLine("onKick-message", channel + " " + sender + " " + login + " " + hostname + " " + recipient + " " + message)
-        
     def commandOutputHandler(self):
         """
             Polls for responses from command handles and then sends the resulting messages to the server
